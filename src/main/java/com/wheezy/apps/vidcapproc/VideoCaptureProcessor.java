@@ -69,7 +69,15 @@ import com.wheezy.utils.file.FileUtility;
 
 /* TODO FEATURE LIST
  *
+ * Check for file handle from capture before attempting move
+ *
  * Menu selection for capture filename (date parsing) 
+ * 
+ * Place keepers/clips into game directories
+ * 
+ * Use native file copy for faster file movement
+ * 
+ * Put timestamp tags in mp4 metadata like GoPro
  *
  * Show selected game icon when game selector is collapsed
  *
