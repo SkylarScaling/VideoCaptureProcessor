@@ -3,13 +3,11 @@ package com.wheezy.utils.file;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 
 import com.wheezy.utils.file.filter.list.FileExtensionListFilter;
 import com.wheezy.utils.file.filter.list.FileOnlyListFilter;
@@ -113,76 +111,36 @@ public class FileUtility
         File src = new File(srcFile, file);
         copyFiles(src, dest, true);
       }
-    }
-    else
+    } else
     {
-      // Copy file
-      FileInputStream fis = new FileInputStream(srcFile);
-      FileOutputStream fos = new FileOutputStream(destFile);
+      // TODO SCS Update this to be more robust
+      int returnCode = FileUtility.moveFileWithoutCopy(srcFile, destFile);
 
-      FileChannel srcChannel = null;
-      FileChannel destChannel = null;
-      try
+      // File move failed, likely due to different volume
+      if (returnCode == FileUtility.FILE_MOVE_ERROR)
       {
-        srcChannel = fis.getChannel();
-        destChannel = fos.getChannel();
-        /*
-         * TODO This kind of transfer can cause problems if files are over 1GB and we're
-         * running on a 32-bit Java.
-         * 
-         * Alternative: // For creating a byte type buffer byte[] buf = new byte[1024];
-         * // For writing to another specified file from buffer buf out.write(buf, 0,
-         * len);
-         */
-        destChannel.transferFrom(srcChannel, 0, srcChannel.size());
+        // Perform legacy copy
+        Files.move(srcFile.toPath(), destFile.toPath());
       }
-      finally
-      {
-        if (srcChannel != null)
-        {
-          try
-          {
-            srcChannel.close();
-          }
-          catch (IOException e)
-          {
-            // Don't care
-          }
-        }
-        if (destChannel != null)
-        {
-          try
-          {
-            destChannel.close();
-          }
-          catch (IOException e)
-          {
-            // Don't care
-          }
-        }
-        if (fis != null)
-        {
-          try
-          {
-            fis.close();
-          }
-          catch (IOException e)
-          {
-            // Don't care
-          }
-        }
-        if (fos != null)
-        {
-          try
-          {
-            fos.close();
-          }
-          catch (IOException e)
-          {
-            // Don't care
-          }
-        }
-      }
+    }
+
+    return FileUtility.SUCCESS;
+  }
+
+  /**
+   * Moves the srcFile to destFile using a file rename. This doesn't work for
+   * moving between volumes, so be sure to check return codes.
+   *
+   * @return Return Codes:<br>
+   *         FileUtility.SUCCESS<br>
+   *         FileUtility.FILE_MOVE_ERROR<br>
+   */
+  public static int moveFileWithoutCopy(File srcFile, File destFile)
+  {
+    boolean succeeded = srcFile.renameTo(destFile);
+    if (!succeeded)
+    {
+      return FileUtility.FILE_MOVE_ERROR;
     }
 
     return FileUtility.SUCCESS;
@@ -200,6 +158,7 @@ public class FileUtility
    *         FileUtility.FILE_DELETE_ERROR<br>
    * @throws IOException
    */
+  @Deprecated
   public static int moveFiles(File srcFile, File destDir) throws IOException
   {
     return moveFiles(srcFile, destDir, null);
@@ -251,27 +210,7 @@ public class FileUtility
       destDir = new File(newFilename.toString());
     }
 
-    if (copyFiles(srcFile, destDir, false) == FileUtility.SUCCESS)
-    {
-      if (srcFile.isDirectory())
-      {
-        if (!deleteDirectory(srcFile))
-        {
-          return FileUtility.DIRECTORY_DELETE_ERROR;
-        }
-        return FileUtility.SUCCESS;
-      }
-      else
-      {
-        if (!srcFile.delete())
-        {
-          return FileUtility.FILE_DELETE_ERROR;
-        }
-        return FileUtility.SUCCESS;
-      }
-    }
-
-    return FileUtility.FILE_MOVE_ERROR;
+    return copyFiles(srcFile, destDir, false);
   }
 
   /**
@@ -296,16 +235,14 @@ public class FileUtility
       }
 
       return contents.toString();
-    }
-    finally
+    } finally
     {
       if (fileIn != null)
       {
         try
         {
           fileIn.close();
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
           // Don't care
         }
@@ -332,16 +269,14 @@ public class FileUtility
     {
       output = new BufferedWriter(new FileWriter(file, append));
       output.write(contents);
-    }
-    finally
+    } finally
     {
       if (output != null)
       {
         try
         {
           output.close();
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
           // Don't care
         }
@@ -372,8 +307,7 @@ public class FileUtility
         {
           filesNotDeleted++;
         }
-      }
-      catch (SecurityException se)
+      } catch (SecurityException se)
       {
         System.out.println("Error deleting file " + aList.getName());
       }
@@ -404,8 +338,7 @@ public class FileUtility
           {
             filesNotDeleted++;
           }
-        }
-        catch (SecurityException se)
+        } catch (SecurityException se)
         {
           System.out.println("Error deleting file " + aList.getName());
         }
@@ -484,8 +417,7 @@ public class FileUtility
     if (filenameStartsWith != null)
     {
       return dir.listFiles(new FileStartsWithListFilter(filenameStartsWith));
-    }
-    else
+    } else
     {
       return dir.listFiles(new FileOnlyListFilter());
     }
@@ -531,10 +463,10 @@ public class FileUtility
 
     return extension;
   }
-  
+
   /**
-   * Returns a sanitized filename string. Specifically, this replaces every character that is not a 
-   * letter, number, or underscore with an underscore.
+   * Returns a sanitized filename string. Specifically, this replaces every
+   * character that is not a letter, number, or underscore with an underscore.
    * 
    * @param filenameString
    * @return
