@@ -629,7 +629,7 @@ public class VideoCaptureProcessor implements Observer
     /*
      * Hauppauge TODO Allow custom format Filename format: 2011_8_23_20_14_6.M2TS
      * 
-     * Live Gamer Portable Filename format: 20110823201406.mp4
+     * Live Gamer Portable Filename format: (yyyyMMddHHmmss) 20110823201406.mp4
      * 
      * OBS Studio Filename format: yyyy-MM-dd-HH-mm-ss.mp4
      */
