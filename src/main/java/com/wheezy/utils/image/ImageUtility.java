@@ -1,6 +1,7 @@
 package com.wheezy.utils.image;
 
 import java.awt.AlphaComposite;
+import java.awt.Canvas;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.RenderingHints;
@@ -15,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-
-import sun.awt.image.BufferedImageGraphicsConfig;
 
 public class ImageUtility
 {
@@ -152,7 +151,7 @@ public class ImageUtility
 
     private static BufferedImage createCompatibleImage(BufferedImage image)
     {
-        GraphicsConfiguration gc = BufferedImageGraphicsConfig.getConfig(image);
+    	GraphicsConfiguration gc = new Canvas(null).getGraphicsConfiguration();
         BufferedImage result = gc.createCompatibleImage(image.getWidth(), image.getHeight(),
                 Transparency.TRANSLUCENT);
         Graphics2D g2 = result.createGraphics();
