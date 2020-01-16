@@ -69,7 +69,15 @@ import com.wheezy.utils.file.FileUtility;
 
 /* TODO FEATURE LIST
  *
+ * Check for file handle from capture before attempting move
+ *
  * Menu selection for capture filename (date parsing) 
+ * 
+ * Place keepers/clips into game directories
+ * 
+ * Use native file copy for faster file movement
+ * 
+ * Put timestamp tags in mp4 metadata like GoPro
  *
  * Show selected game icon when game selector is collapsed
  *
@@ -116,8 +124,7 @@ public class VideoCaptureProcessor implements Observer
   public static final String LOG_FILE_NAME = "logs/CapProc.log";
   private static final String CLIPS_FILE_EXTENSION = ".clips";
   private static final String CLIPS_DIRECTORY = "clips/";
-  public static final Image WINDOW_ICON = Toolkit.getDefaultToolkit().getImage(
-      "images/CapUtilAppIcon.png");
+  public static final Image WINDOW_ICON = Toolkit.getDefaultToolkit().getImage("images/CapUtilAppIcon.png");
   public static int GAME_ICON_WIDTH = 64;
   public static int GAME_ICON_HEIGHT = 64;
 
@@ -133,8 +140,8 @@ public class VideoCaptureProcessor implements Observer
   private static final int GAME_SELECTOR_HEIGHT_PER_ROW = 75;
   private static final int ICONS_PER_ROW = 6;
   private static final int DEFAULT_STATUS_BAR_HEIGHT = 16;
-  private static final Rectangle BUTTONS_ONLY_WINDOW_SIZE = new Rectangle(100, 100,
-      DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+  private static final Rectangle BUTTONS_ONLY_WINDOW_SIZE = new Rectangle(100, 100, DEFAULT_WINDOW_WIDTH,
+      DEFAULT_WINDOW_HEIGHT);
 
   private static final GameController controller;
 
@@ -156,12 +163,12 @@ public class VideoCaptureProcessor implements Observer
     {
       logFile.getParentFile().mkdirs();
       logFile.createNewFile();
-    } 
+    }
     catch (IOException e)
     {
       e.printStackTrace();
     }
-    
+
     controller = GameController.getInstance();
   }
 
@@ -227,27 +234,22 @@ public class VideoCaptureProcessor implements Observer
       {
         if (threadRunning)
         {
-          Object[] options =
-          { "Close Anyway", "Cancel" };
+          Object[] options = { "Close Anyway", "Cancel" };
           if (JOptionPane.showOptionDialog(captureProcessorFrame,
-              "A thread is running in the background. "
-                  + "There is most likely a file move in progress.\n"
-                  + "Please check the status bar at the bottom of the "
-                  + "application window for the\n"
-                  + "progress of actions being performed and attempt to "
-                  + "close the application\n" + "after the action has completed.",
-              "Thread Running", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
-              options, options[1]) == JOptionPane.NO_OPTION)
+              "A thread is running in the background. " + "There is most likely a file move in progress.\n"
+                  + "Please check the status bar at the bottom of the " + "application window for the\n"
+                  + "progress of actions being performed and attempt to " + "close the application\n"
+                  + "after the action has completed.",
+              "Thread Running", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options,
+              options[1]) == JOptionPane.NO_OPTION)
           {
             return;
           }
         }
 
-        propertiesInstance.setProperty(
-            CaptureProcessorProperties.FRAME_LOCATION_X_PROPERTY.getName(),
+        propertiesInstance.setProperty(CaptureProcessorProperties.FRAME_LOCATION_X_PROPERTY.getName(),
             Double.toString(captureProcessorFrame.getLocationOnScreen().getX()));
-        propertiesInstance.setProperty(
-            CaptureProcessorProperties.FRAME_LOCATION_Y_PROPERTY.getName(),
+        propertiesInstance.setProperty(CaptureProcessorProperties.FRAME_LOCATION_Y_PROPERTY.getName(),
             Double.toString(captureProcessorFrame.getLocationOnScreen().getY()));
         try
         {
@@ -275,8 +277,8 @@ public class VideoCaptureProcessor implements Observer
     catch (IOException e3)
     {
       JOptionPane.showMessageDialog(captureProcessorFrame,
-          "An error was encountered while reading from the properties file.",
-          "Error Reading Properties", JOptionPane.ERROR_MESSAGE);
+          "An error was encountered while reading from the properties file.", "Error Reading Properties",
+          JOptionPane.ERROR_MESSAGE);
       logger.log(Level.SEVERE, "Property Read Error", e3);
     }
 
@@ -293,8 +295,7 @@ public class VideoCaptureProcessor implements Observer
 
     alwaysOnTopMenuCheckBox = new JCheckBoxMenuItem("Always On Top");
     alwaysOnTopMenuCheckBox.setMnemonic('A');
-    alwaysOnTopMenuCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
-        InputEvent.CTRL_MASK));
+    alwaysOnTopMenuCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
     alwaysOnTopMenuCheckBox.addActionListener(new ActionListener()
     {
       @Override
@@ -339,15 +340,13 @@ public class VideoCaptureProcessor implements Observer
 
     gameSelectorCheckBox = new JCheckBoxMenuItem("Show Game Selector");
     gameSelectorCheckBox.setMnemonic('S');
-    gameSelectorCheckBox
-        .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+    gameSelectorCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
     gameSelectorCheckBox.addActionListener(new ActionListener()
     {
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        VideoCaptureProcessor.this.showGameSelector(VideoCaptureProcessor.this.gameSelectorCheckBox
-            .getState());
+        VideoCaptureProcessor.this.showGameSelector(VideoCaptureProcessor.this.gameSelectorCheckBox.getState());
       }
     });
     viewMenu.add(gameSelectorCheckBox);
@@ -376,14 +375,10 @@ public class VideoCaptureProcessor implements Observer
     JPanel controlButtonPanel = new JPanel();
     mainPanel.add(controlButtonPanel);
     GridBagLayout gbl_controlButtonPanel = new GridBagLayout();
-    gbl_controlButtonPanel.columnWidths = new int[]
-    { 150, 150, 150, 0 };
-    gbl_controlButtonPanel.rowHeights = new int[]
-    { 50, 23, 0 };
-    gbl_controlButtonPanel.columnWeights = new double[]
-    { 0.0, 0.0, 0.0, Double.MIN_VALUE };
-    gbl_controlButtonPanel.rowWeights = new double[]
-    { 0.0, 0.0, Double.MIN_VALUE };
+    gbl_controlButtonPanel.columnWidths = new int[] { 150, 150, 150, 0 };
+    gbl_controlButtonPanel.rowHeights = new int[] { 50, 23, 0 };
+    gbl_controlButtonPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+    gbl_controlButtonPanel.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
     controlButtonPanel.setLayout(gbl_controlButtonPanel);
 
     // Keepers Button
@@ -402,14 +397,13 @@ public class VideoCaptureProcessor implements Observer
       }
     });
 
-    keepersButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"),
-        "saveKeeper");
+    keepersButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"), "saveKeeper");
     keepersButton.getActionMap().put("saveKeeper", new SaveKeeperAction());
     keepersButton.setFont(new Font("Arial", Font.BOLD, 16));
     keepersButton.setToolTipText("Move latest video to keepers folder (F1)");
     keepersButton.setPreferredSize(CONTROL_BUTTON_PREFERRED_SIZE);
-    keepersButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null,
-        null, null), new MatteBorder(4, 4, 4, 4, KEEPERS_COLOR)));
+    keepersButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null),
+        new MatteBorder(4, 4, 4, 4, KEEPERS_COLOR)));
 
     // Clips Button
     clipsButton = new JButton("CLIPS");
@@ -426,14 +420,13 @@ public class VideoCaptureProcessor implements Observer
         saveNewestFile(ActionTypes.SAVE_CLIP);
       }
     });
-    clipsButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F2"),
-        "saveClip");
+    clipsButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F2"), "saveClip");
     clipsButton.getActionMap().put("saveClip", new SaveClipAction());
     clipsButton.setFont(new Font("Arial", Font.BOLD, 16));
     clipsButton.setToolTipText("Move latest video to clips folder (F2)");
     clipsButton.setPreferredSize(CONTROL_BUTTON_PREFERRED_SIZE);
-    clipsButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
-        null), new MatteBorder(4, 4, 4, 4, CLIPS_COLOR)));
+    clipsButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null),
+        new MatteBorder(4, 4, 4, 4, CLIPS_COLOR)));
 
     // Cleanup Button
     cleanupButton = new JButton("CLEANUP");
@@ -447,12 +440,9 @@ public class VideoCaptureProcessor implements Observer
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        if (JOptionPane.showConfirmDialog(
-            captureProcessorFrame,
-            "Are you sure you want to delete all "
-                + "files from the capture directory?\n"
-                + propertiesInstance
-                    .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()),
+        if (JOptionPane.showConfirmDialog(captureProcessorFrame,
+            "Are you sure you want to delete all " + "files from the capture directory?\n"
+                + propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()),
             "Confirm Cleanup", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION)
         {
           new FileDeleteThread().start();
@@ -463,8 +453,8 @@ public class VideoCaptureProcessor implements Observer
     cleanupButton.setFont(new Font("Arial", Font.BOLD, 16));
     cleanupButton.setToolTipText("Delete files that have not been copied to keepers or clips");
     cleanupButton.setPreferredSize(CONTROL_BUTTON_PREFERRED_SIZE);
-    cleanupButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null,
-        null, null), new MatteBorder(4, 4, 4, 4, CLEANUP_COLOR)));
+    cleanupButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null),
+        new MatteBorder(4, 4, 4, 4, CLEANUP_COLOR)));
 
     markClipButton = new JButton("Mark Clip");
     markClipButton.addActionListener(new ActionListener()
@@ -475,21 +465,20 @@ public class VideoCaptureProcessor implements Observer
         markClip();
       }
     });
-    markClipButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F3"),
-        "markClip");
+    markClipButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F3"), "markClip");
     markClipButton.getActionMap().put("markClip", new MarkClipAction());
     markClipButton.setToolTipText("Mark the timestamp for a clip (F3)");
     markClipButton.setPreferredSize(MARK_BUTTON_PREFERRED_SIZE);
     markClipButton.setFont(new Font("Arial", Font.BOLD, 12));
-    markClipButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null,
-        null, null), new MatteBorder(2, 2, 2, 2, CLIPS_COLOR)));
+    markClipButton.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null),
+        new MatteBorder(2, 2, 2, 2, CLIPS_COLOR)));
     GridBagConstraints gbc_markClipButton = new GridBagConstraints();
     gbc_markClipButton.insets = new Insets(5, 2, 5, 2);
     gbc_markClipButton.gridx = 1;
     gbc_markClipButton.gridy = 1;
     controlButtonPanel.add(markClipButton, gbc_markClipButton);
-    
-    //TODO Create custom text field with Input Hint
+
+    // TODO Create custom text field with Input Hint
     labelField = new FocusTextField();
     labelField.setToolTipText("Add a label to the clip or file");
     labelField.setPreferredSize(TEXT_FIELD_PREFERRED_SIZE);
@@ -502,8 +491,7 @@ public class VideoCaptureProcessor implements Observer
     JPanel statusBarPanel = new JPanel();
     statusBarPanel.setBorder(new MatteBorder(1, 0, 0, 0, Color.GRAY));
     statusBarPanel.setPreferredSize(new Dimension(DEFAULT_WINDOW_WIDTH, DEFAULT_STATUS_BAR_HEIGHT));
-    statusBarPanel.setMaximumSize(new Dimension(statusBarPanel.getMaximumSize().width,
-        DEFAULT_STATUS_BAR_HEIGHT));
+    statusBarPanel.setMaximumSize(new Dimension(statusBarPanel.getMaximumSize().width, DEFAULT_STATUS_BAR_HEIGHT));
     captureProcessorFrame.getContentPane().add(statusBarPanel, BorderLayout.SOUTH);
     statusBarPanel.setLayout(new BorderLayout(0, 0));
 
@@ -542,64 +530,61 @@ public class VideoCaptureProcessor implements Observer
 
     switch (at)
     {
-      case SAVE_KEEPER:
-        locationProperty = CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName();
-        fb = FunctionButtons.KEEPERS_BUTTON;
-        break;
-      case SAVE_CLIP:
-        locationProperty = CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName();
-        fb = FunctionButtons.CLIPS_BUTTON;
-        break;
-      case CLEANUP:
-        break;
-      case MARK_CLIP:
-        break;
-      default:
-        break;
+    case SAVE_KEEPER:
+      locationProperty = CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName();
+      fb = FunctionButtons.KEEPERS_BUTTON;
+      break;
+    case SAVE_CLIP:
+      locationProperty = CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName();
+      fb = FunctionButtons.CLIPS_BUTTON;
+      break;
+    case CLEANUP:
+      break;
+    case MARK_CLIP:
+      break;
+    default:
+      break;
     }
 
-    File newFile = FileUtility.findNewestFileInDirectory(propertiesInstance
-        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()));
+    File newFile = FileUtility.findNewestFileInDirectory(
+        propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()));
 
     if (newFile != null)
     {
       String filename = FileUtility.getFilename(newFile, false);
-      new FileMoveThread(filename, new File(propertiesInstance.getProperty(locationProperty)))
-          .start();
+      new FileMoveThread(filename, new File(propertiesInstance.getProperty(locationProperty))).start();
     }
     else
     {
-      JOptionPane.showMessageDialog(captureProcessorFrame,
-          "There are no files in the capture directory!", "Capture Directory is Empty",
-          JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(captureProcessorFrame, "There are no files in the capture directory!",
+          "Capture Directory is Empty", JOptionPane.WARNING_MESSAGE);
     }
 
     resetLabelFieldAndGetFocus();
-    
+
     new ButtonSwingWorker(fb);
   }
 
   private boolean keepFile(String oldFilename, File destDir, String newFilename)
   {
-    File[] fileList = FileUtility.getListOfFilesInDirectory(propertiesInstance
-        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()), oldFilename);
+    File[] fileList = FileUtility.getListOfFilesInDirectory(
+        propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()), oldFilename);
 
     try
     {
-      for (File src : fileList)
+      for (File srcFile : fileList)
       {
-        int result = FileUtility.moveFiles(src, destDir,
-            newFilename + FileUtility.getFileExtension(src, true));
+        int result = FileUtility.moveFiles(srcFile, destDir, newFilename + FileUtility.getFileExtension(srcFile, true));
 
         if (result != FileUtility.SUCCESS)
         {
-          JOptionPane.showMessageDialog(captureProcessorFrame,
-              "File move was unable to complete for the following reason: "
+          JOptionPane.showMessageDialog(
+              captureProcessorFrame, "File move was unable to complete for the following reason: "
                   + FileUtility.ERROR_DESCRIPTIONS[result] + ".\n" + "Please try again.",
               "Problem Moving Files", JOptionPane.WARNING_MESSAGE);
 
-          logger.warning("Error encountered while attempting to move file to "
-              + destDir.getCanonicalPath() + " - " + FileUtility.ERROR_DESCRIPTIONS[result]);
+          logger.warning("Error encountered while attempting to move file to " + destDir.getCanonicalPath() + " - "
+              + FileUtility.ERROR_DESCRIPTIONS[result]);
           stopProgressBar("Move Failed");
           threadRunning = false;
           return true;
@@ -615,8 +600,8 @@ public class VideoCaptureProcessor implements Observer
     catch (IOException e)
     {
       JOptionPane.showMessageDialog(captureProcessorFrame,
-          "An error was encountered while attempting to move files. "
-              + "Check your video directories.", "Error Moving Files", JOptionPane.ERROR_MESSAGE);
+          "An error was encountered while attempting to move files. " + "Check your video directories.",
+          "Error Moving Files", JOptionPane.ERROR_MESSAGE);
       stopProgressBar("Move Failed");
       threadRunning = false;
       logger.log(Level.SEVERE, "Error Moving Files", e);
@@ -629,32 +614,28 @@ public class VideoCaptureProcessor implements Observer
   {
     Date currentTime = new Date();
 
-    File clipFile = FileUtility.findNewestFileInDirectory(propertiesInstance
-        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()));
+    File clipFile = FileUtility.findNewestFileInDirectory(
+        propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()));
 
     if (clipFile == null)
     {
-      JOptionPane.showMessageDialog(captureProcessorFrame,
-          "There are no files in the capture directory!", "Capture Directory is Empty",
-          JOptionPane.WARNING_MESSAGE);
+      JOptionPane.showMessageDialog(captureProcessorFrame, "There are no files in the capture directory!",
+          "Capture Directory is Empty", JOptionPane.WARNING_MESSAGE);
       return;
     }
 
     String filename = FileUtility.getFilename(clipFile, false);
 
-    /* 
-     * Hauppauge TODO Allow custom format
-     * Filename format: 2011_8_23_20_14_6.M2TS
+    /*
+     * Hauppauge TODO Allow custom format Filename format: 2011_8_23_20_14_6.M2TS
      * 
-     * Live Gamer Portable
-     * Filename format: 20110823201406.mp4
+     * Live Gamer Portable Filename format: (yyyyMMddHHmmss) 20110823201406.mp4
      * 
-     * OBS Studio
-     * Filename format: yyyy-MM-dd-HH-mm-ss.mp4
+     * OBS Studio Filename format: yyyy-MM-dd-HH-mm-ss.mp4
      */
     /*
-     * SimpleDateFormat filenameDateFormat = new
-     * SimpleDateFormat("yyyy_M_d_H_m_s", Locale.ENGLISH);
+     * SimpleDateFormat filenameDateFormat = new SimpleDateFormat("yyyy_M_d_H_m_s",
+     * Locale.ENGLISH);
      */
     SimpleDateFormat filenameDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.ENGLISH);
 
@@ -665,10 +646,9 @@ public class VideoCaptureProcessor implements Observer
     }
     catch (ParseException e)
     {
-      JOptionPane.showMessageDialog(
-          captureProcessorFrame,
-          "Unable to parse date from capture file name. This clip cannot be marked.\n"
-              + clipFile.getPath(), "Clip Parsing Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(captureProcessorFrame,
+          "Unable to parse date from capture file name. This clip cannot be marked.\n" + clipFile.getPath(),
+          "Clip Parsing Error", JOptionPane.ERROR_MESSAGE);
       logger.log(Level.SEVERE, "Clip Date Parsing Error", e);
       return;
     }
@@ -683,23 +663,23 @@ public class VideoCaptureProcessor implements Observer
     String clipLabel = labelField.getText().isEmpty() ? "" : " (" + labelField.getText() + ") ";
     try
     {
-      FileUtility.writeStringToFile(clipTime + clipLabel, new File(CLIPS_DIRECTORY + filename
-          + CLIPS_FILE_EXTENSION), true);
+      FileUtility.writeStringToFile(clipTime + clipLabel, new File(CLIPS_DIRECTORY + filename + CLIPS_FILE_EXTENSION),
+          true);
       progressLabel.setText("Clip marked: " + clipTime);
     }
     catch (IOException e)
     {
       JOptionPane.showMessageDialog(captureProcessorFrame,
-          "Unable to parse date from capture file name. This clip cannot be marked.",
-          "Clip Parsing Error", JOptionPane.ERROR_MESSAGE);
+          "Unable to parse date from capture file name. This clip cannot be marked.", "Clip Parsing Error",
+          JOptionPane.ERROR_MESSAGE);
       logger.log(Level.SEVERE, "Clip File Creation Error", e);
     }
-    
+
     resetLabelFieldAndGetFocus();
-    
+
     new ButtonSwingWorker(FunctionButtons.MARK_BUTTON);
   }
-  
+
   private void resetLabelFieldAndGetFocus()
   {
     // Reset the text
@@ -710,8 +690,7 @@ public class VideoCaptureProcessor implements Observer
   private void loadComponentProperties()
   {
     // Always on top
-    String onTop = propertiesInstance.getProperty(CaptureProcessorProperties.ALWAYS_ON_TOP_PROPERTY
-        .getName());
+    String onTop = propertiesInstance.getProperty(CaptureProcessorProperties.ALWAYS_ON_TOP_PROPERTY.getName());
 
     if (onTop == null)
     {
@@ -742,8 +721,7 @@ public class VideoCaptureProcessor implements Observer
     }
 
     // Selected game
-    String selected = propertiesInstance
-        .getProperty(CaptureProcessorProperties.SELECTED_GAME_PROPERTY.getName());
+    String selected = propertiesInstance.getProperty(CaptureProcessorProperties.SELECTED_GAME_PROPERTY.getName());
 
     if (selected == null || selected.equals("None"))
     {
@@ -755,10 +733,8 @@ public class VideoCaptureProcessor implements Observer
     }
 
     // Frame location
-    String locX = propertiesInstance
-        .getProperty(CaptureProcessorProperties.FRAME_LOCATION_X_PROPERTY.getName());
-    String locY = propertiesInstance
-        .getProperty(CaptureProcessorProperties.FRAME_LOCATION_Y_PROPERTY.getName());
+    String locX = propertiesInstance.getProperty(CaptureProcessorProperties.FRAME_LOCATION_X_PROPERTY.getName());
+    String locY = propertiesInstance.getProperty(CaptureProcessorProperties.FRAME_LOCATION_Y_PROPERTY.getName());
     if (locX != null && locY != null)
     {
       int intX = (int) Double.parseDouble(locX);
@@ -844,8 +820,8 @@ public class VideoCaptureProcessor implements Observer
     Rectangle newSize = (!show ? BUTTONS_ONLY_WINDOW_SIZE : gameSelectorWindowSize);
 
     Point frameLocation = captureProcessorFrame.getLocation();
-    captureProcessorFrame.setBounds((int) frameLocation.getX(), (int) frameLocation.getY(),
-        (int) newSize.getWidth(), (int) newSize.getHeight());
+    captureProcessorFrame.setBounds((int) frameLocation.getX(), (int) frameLocation.getY(), (int) newSize.getWidth(),
+        (int) newSize.getHeight());
 
     if (show)
     {
@@ -856,9 +832,8 @@ public class VideoCaptureProcessor implements Observer
       captureProcessorFrame.getContentPane().remove(gameSelectorPanel);
     }
 
-    propertiesInstance
-        .setProperty(CaptureProcessorProperties.GAME_SELECTOR_VISIBLE_PROPERTY.getName(),
-            Boolean.toString(show));
+    propertiesInstance.setProperty(CaptureProcessorProperties.GAME_SELECTOR_VISIBLE_PROPERTY.getName(),
+        Boolean.toString(show));
     try
     {
       propertiesInstance.storeProperties();
@@ -883,8 +858,7 @@ public class VideoCaptureProcessor implements Observer
     {
       gameButtonMap.get(selectedGameTitle).selected();
       gameNameLabel.setText(selectedGameTitle);
-      propertiesInstance.setProperty(CaptureProcessorProperties.SELECTED_GAME_PROPERTY.getName(),
-          selectedGameTitle);
+      propertiesInstance.setProperty(CaptureProcessorProperties.SELECTED_GAME_PROPERTY.getName(), selectedGameTitle);
       try
       {
         propertiesInstance.storeProperties();
@@ -914,8 +888,7 @@ public class VideoCaptureProcessor implements Observer
   public static void setFileChooserLastPath(File path)
   {
     fileChooserLastPath = path;
-    propertiesInstance.setProperty(
-        CaptureProcessorProperties.FILE_CHOOSER_LOCATION_PROPERTY.getName(),
+    propertiesInstance.setProperty(CaptureProcessorProperties.FILE_CHOOSER_LOCATION_PROPERTY.getName(),
         fileChooserLastPath.getPath());
   }
 
@@ -957,30 +930,30 @@ public class VideoCaptureProcessor implements Observer
             Color origColor;
             switch (selection)
             {
-              case KEEPERS_BUTTON:
-                origColor = keepersButton.getBackground();
-                keepersButton.setBackground(KEEPERS_COLOR);
-                sleep();
-                keepersButton.setBackground(origColor);
-                break;
-              case CLIPS_BUTTON:
-                origColor = clipsButton.getBackground();
-                clipsButton.setBackground(CLIPS_COLOR);
-                sleep();
-                clipsButton.setBackground(origColor);
-                break;
-              case CLEANUP_BUTTON:
-                origColor = cleanupButton.getBackground();
-                cleanupButton.setBackground(CLEANUP_COLOR);
-                sleep();
-                cleanupButton.setBackground(origColor);
-                break;
-              case MARK_BUTTON:
-                origColor = markClipButton.getBackground();
-                markClipButton.setBackground(CLIPS_COLOR);
-                sleep();
-                markClipButton.setBackground(origColor);
-                break;
+            case KEEPERS_BUTTON:
+              origColor = keepersButton.getBackground();
+              keepersButton.setBackground(KEEPERS_COLOR);
+              sleep();
+              keepersButton.setBackground(origColor);
+              break;
+            case CLIPS_BUTTON:
+              origColor = clipsButton.getBackground();
+              clipsButton.setBackground(CLIPS_COLOR);
+              sleep();
+              clipsButton.setBackground(origColor);
+              break;
+            case CLEANUP_BUTTON:
+              origColor = cleanupButton.getBackground();
+              cleanupButton.setBackground(CLEANUP_COLOR);
+              sleep();
+              cleanupButton.setBackground(origColor);
+              break;
+            case MARK_BUTTON:
+              origColor = markClipButton.getBackground();
+              markClipButton.setBackground(CLIPS_COLOR);
+              sleep();
+              markClipButton.setBackground(origColor);
+              break;
             }
             working = false;
           }
@@ -1015,8 +988,8 @@ public class VideoCaptureProcessor implements Observer
       showGameSelector(true);
     }
 
-    if (paramObject instanceof String && ((String) paramObject).contains("DELETED")
-        && selectedGameTitle != null && ((String) paramObject).contains(selectedGameTitle))
+    if (paramObject instanceof String && ((String) paramObject).contains("DELETED") && selectedGameTitle != null
+        && ((String) paramObject).contains(selectedGameTitle))
     {
       setSelectedGame(gameButtonMap.get("None").getGameTitle());
     }
@@ -1071,18 +1044,19 @@ public class VideoCaptureProcessor implements Observer
     public FileMoveThread(String filename, File destDir)
     {
       oldFilename = filename;
-      newFilename = filename;      
+      newFilename = filename;
       String filenameLabel = "";
-      
+
       if (selectedGameTitle != null)
       {
         Game game = controller.getGame(selectedGameTitle);
         if (game != null)
         {
-          filenameLabel = game.getFilenameLabel();          
+          filenameLabel = game.getFilenameLabel();
         }
-        
-        newFilename = filenameLabel + "_" + FileUtility.sanitizeStringForFilename(labelField.getText()) + "_" + oldFilename;
+
+        newFilename = filenameLabel + "_" + FileUtility.sanitizeStringForFilename(labelField.getText()) + "_"
+            + oldFilename;
       }
       this.destDir = destDir;
     }
@@ -1117,13 +1091,11 @@ public class VideoCaptureProcessor implements Observer
       File[] fileList = FileUtility.getListOfFilesInDirectory(CLIPS_DIRECTORY, null);
       if (fileList != null && fileList.length != 0)
       {
-        Object[] options =
-        { "Yes", "Cancel", "Save Clips" };
+        Object[] options = { "Yes", "Cancel", "Save Clips" };
         int choice = JOptionPane.showOptionDialog(captureProcessorFrame,
             "Clips have been tagged for one or more files that will be deleted.\n"
-                + "Are you sure you want to continue with the cleanup?", "Clips Exist",
-            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options,
-            options[2]);
+                + "Are you sure you want to continue with the cleanup?",
+            "Clips Exist", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[2]);
 
         if (choice == JOptionPane.NO_OPTION)// Cancel
         {
@@ -1146,10 +1118,8 @@ public class VideoCaptureProcessor implements Observer
           for (File clip : fileList)
           {
             String filename = FileUtility.getFilename(clip, false);
-            if (keepFile(
-                filename,
-                new File(propertiesInstance
-                    .getProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName())),
+            if (keepFile(filename,
+                new File(propertiesInstance.getProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName())),
                 filenamePrefix + filename))
             {
               return;
@@ -1158,13 +1128,13 @@ public class VideoCaptureProcessor implements Observer
         }
       }
 
-      int undeleted = FileUtility.deleteFilesFromDirectory(new File(propertiesInstance
-          .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName())));
+      int undeleted = FileUtility.deleteFilesFromDirectory(
+          new File(propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName())));
 
       if (undeleted != 0)
       {
-        JOptionPane.showMessageDialog(captureProcessorFrame, undeleted
-            + " files could not be deleted from the capture directory.", "Files Not Deleted",
+        JOptionPane.showMessageDialog(captureProcessorFrame,
+            undeleted + " files could not be deleted from the capture directory.", "Files Not Deleted",
             JOptionPane.WARNING_MESSAGE);
       }
 
@@ -1179,14 +1149,12 @@ public class VideoCaptureProcessor implements Observer
   {
     /*
      * Future // Determine if the GraphicsDevice supports translucency
-     * GraphicsEnvironment ge =
-     * GraphicsEnvironment.getLocalGraphicsEnvironment(); GraphicsDevice gd =
-     * ge.getDefaultScreenDevice();
+     * GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+     * GraphicsDevice gd = ge.getDefaultScreenDevice();
      * 
      * //If translucent windows aren't supported, set flag if
      * (gd.isWindowTranslucencySupported
-     * (GraphicsDevice.WindowTranslucency.TRANSLUCENT)) { isTranslucent = true;
-     * }
+     * (GraphicsDevice.WindowTranslucency.TRANSLUCENT)) { isTranslucent = true; }
      */
 
     if (args.length != 0 && args[0] != null && args[0].equalsIgnoreCase("debug"))
