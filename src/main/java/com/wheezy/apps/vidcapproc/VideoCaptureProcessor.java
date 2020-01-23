@@ -295,7 +295,7 @@ public class VideoCaptureProcessor implements Observer
 
     alwaysOnTopMenuCheckBox = new JCheckBoxMenuItem("Always On Top");
     alwaysOnTopMenuCheckBox.setMnemonic('A');
-    alwaysOnTopMenuCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+    alwaysOnTopMenuCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
     alwaysOnTopMenuCheckBox.addActionListener(new ActionListener()
     {
       @Override
@@ -340,7 +340,7 @@ public class VideoCaptureProcessor implements Observer
 
     gameSelectorCheckBox = new JCheckBoxMenuItem("Show Game Selector");
     gameSelectorCheckBox.setMnemonic('S');
-    gameSelectorCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+    gameSelectorCheckBox.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
     gameSelectorCheckBox.addActionListener(new ActionListener()
     {
       @Override
@@ -352,7 +352,7 @@ public class VideoCaptureProcessor implements Observer
     viewMenu.add(gameSelectorCheckBox);
 
     JMenuItem manageGamesMenuItem = new JMenuItem("Manage Games...");
-    manageGamesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
+    manageGamesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK));
     viewMenu.add(manageGamesMenuItem);
     manageGamesMenuItem.setMnemonic('M');
     manageGamesMenuItem.addActionListener(new ActionListener()
