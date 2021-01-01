@@ -560,8 +560,6 @@ public class VideoCaptureProcessor implements Observer
           "Capture Directory is Empty", JOptionPane.WARNING_MESSAGE);
     }
 
-    resetLabelFieldAndGetFocus();
-
     new ButtonSwingWorker(fb);
   }
 
