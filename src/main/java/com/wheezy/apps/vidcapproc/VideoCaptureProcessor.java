@@ -71,7 +71,7 @@ import com.wheezy.utils.file.FileUtility;
  *
  * Check for file handle from capture before attempting move
  *
- * Menu selection for capture filename (date parsing) 
+ * Menu selection for capture filename (date parsing)
  * 
  * Place keepers/clips into game directories
  * 
