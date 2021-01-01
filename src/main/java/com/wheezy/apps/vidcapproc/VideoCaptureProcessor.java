@@ -673,8 +673,6 @@ public class VideoCaptureProcessor implements Observer
       logger.log(Level.SEVERE, "Clip File Creation Error", e);
     }
 
-    resetLabelFieldAndGetFocus();
-
     new ButtonSwingWorker(FunctionButtons.MARK_BUTTON);
   }
 
