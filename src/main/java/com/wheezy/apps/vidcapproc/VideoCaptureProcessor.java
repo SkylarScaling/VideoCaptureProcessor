@@ -625,7 +625,6 @@ public class VideoCaptureProcessor implements Observer
     String filename = FileUtility.getFilename(clipFile, false);
 
     /*
-     * TODO
      * Allow custom format Filename format: 2011_8_23_20_14_6.M2TS
      * 
      * Live Gamer Portable Filename format: (yyyyMMddHHmmss) 20110823201406.mp4
