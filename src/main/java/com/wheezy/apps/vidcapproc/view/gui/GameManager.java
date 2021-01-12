@@ -27,6 +27,13 @@ import com.wheezy.apps.vidcapproc.controller.GameController;
 import com.wheezy.apps.vidcapproc.data.Game;
 import com.wheezy.apps.vidcapproc.view.gui.component.GamePanel;
 
+/**
+ * TODO
+ * https://stackoverflow.com/questions/20412445/how-to-create-a-reorder-able-tableview-in-javafx
+ * 
+ * @author Wheezy
+ *
+ */
 public class GameManager extends JDialog implements Observer
 {
   private static final long serialVersionUID = 1L;
