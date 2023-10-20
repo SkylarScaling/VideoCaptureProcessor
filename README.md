@@ -7,3 +7,7 @@ To create a new runnable JAR file in the workbench:
 * In the Export destination field, either type or click Browse to select a location for the JAR file.
 * Select an appropriate library handling strategy.
 * Optionally, you can also create an ANT script to quickly regenerate a previously created runnable JAR file.
+
+# OR
+
+Run create-jar.xml as Ant build
