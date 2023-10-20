@@ -110,8 +110,6 @@ import com.wheezy.utils.file.FileUtility;
 
 /* TODO BUG LIST
  * 
- * Don't set path when you click 'Cancel' on file chooser
- * Validate application position visible on screen when starting
  * Check filename label for valid characters
  */
 
@@ -138,7 +136,7 @@ public class VideoCaptureProcessor implements Observer
   private static final int DEFAULT_WINDOW_WIDTH = 480;
   private static final int DEFAULT_WINDOW_HEIGHT = 205;
   private static final int GAME_SELECTOR_HEIGHT_PER_ROW = 75;
-  private static final int ICONS_PER_ROW = 6;
+  private static final int ICONS_PER_ROW = 5;
   private static final int DEFAULT_STATUS_BAR_HEIGHT = 16;
   private static final Rectangle BUTTONS_ONLY_WINDOW_SIZE = new Rectangle(100, 100, DEFAULT_WINDOW_WIDTH,
       DEFAULT_WINDOW_HEIGHT);
@@ -361,6 +359,7 @@ public class VideoCaptureProcessor implements Observer
       public void actionPerformed(ActionEvent paramActionEvent)
       {
         GameManager gameManager = new GameManager();
+        gameManager.setLocationRelativeTo(captureProcessorFrame);
         gameManager.setVisible(true);
       }
     });

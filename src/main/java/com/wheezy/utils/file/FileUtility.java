@@ -111,7 +111,8 @@ public class FileUtility
         File src = new File(srcFile, file);
         copyFiles(src, dest, true);
       }
-    } else
+    }
+    else
     {
       // TODO SCS Update this to be more robust
       int returnCode = FileUtility.moveFileWithoutCopy(srcFile, destFile);
@@ -235,14 +236,16 @@ public class FileUtility
       }
 
       return contents.toString();
-    } finally
+    }
+    finally
     {
       if (fileIn != null)
       {
         try
         {
           fileIn.close();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
           // Don't care
         }
@@ -269,14 +272,16 @@ public class FileUtility
     {
       output = new BufferedWriter(new FileWriter(file, append));
       output.write(contents);
-    } finally
+    }
+    finally
     {
       if (output != null)
       {
         try
         {
           output.close();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
           // Don't care
         }
@@ -307,7 +312,8 @@ public class FileUtility
         {
           filesNotDeleted++;
         }
-      } catch (SecurityException se)
+      }
+      catch (SecurityException se)
       {
         System.out.println("Error deleting file " + aList.getName());
       }
@@ -338,7 +344,8 @@ public class FileUtility
           {
             filesNotDeleted++;
           }
-        } catch (SecurityException se)
+        }
+        catch (SecurityException se)
         {
           System.out.println("Error deleting file " + aList.getName());
         }
@@ -417,7 +424,8 @@ public class FileUtility
     if (filenameStartsWith != null)
     {
       return dir.listFiles(new FileStartsWithListFilter(filenameStartsWith));
-    } else
+    }
+    else
     {
       return dir.listFiles(new FileOnlyListFilter());
     }

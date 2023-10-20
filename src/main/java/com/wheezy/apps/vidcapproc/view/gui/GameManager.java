@@ -77,7 +77,7 @@ public class GameManager extends JDialog implements Observer
     this.setResizable(false);
     this.setModal(true);
     this.pack();
-    this.setLocationRelativeTo(null); // Center on screen
+    //this.setLocationRelativeTo(null); // Center on screen
     this.setAlwaysOnTop(VideoCaptureProcessor.isAlwaysOnTop());
   }
 
