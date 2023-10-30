@@ -188,7 +188,6 @@ public class GameManager extends JDialog implements Observer
     populateDialog();
     this.pack();
     scrollPane.getVerticalScrollBar().setValue(scrollPosition);
-    this.setLocationRelativeTo(null); // Center on screen
   }
 
   public static void main(String[] args)
