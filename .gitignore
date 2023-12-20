@@ -2,6 +2,7 @@
 /.classpath
 /.project
 /bin/
+/images/
 /logs/
 /CapProcConfig.xml
 /SavedGames.xml

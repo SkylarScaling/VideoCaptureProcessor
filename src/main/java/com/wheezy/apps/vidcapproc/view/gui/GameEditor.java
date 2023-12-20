@@ -6,16 +6,20 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -92,14 +96,10 @@ public class GameEditor extends JDialog
     contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
     getContentPane().add(contentPanel, BorderLayout.CENTER);
     GridBagLayout gbl_contentPanel = new GridBagLayout();
-    gbl_contentPanel.columnWidths = new int[]
-    { 281, 0 };
-    gbl_contentPanel.rowHeights = new int[]
-    { 33, 33, 33, 0 };
-    gbl_contentPanel.columnWeights = new double[]
-    { 0.0, Double.MIN_VALUE };
-    gbl_contentPanel.rowWeights = new double[]
-    { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+    gbl_contentPanel.columnWidths = new int[] { 281, 0 };
+    gbl_contentPanel.rowHeights = new int[] { 33, 33, 33, 0 };
+    gbl_contentPanel.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+    gbl_contentPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
     contentPanel.setLayout(gbl_contentPanel);
 
     JPanel titlePanel = new JPanel();
@@ -170,17 +170,18 @@ public class GameEditor extends JDialog
         selectedImage = ifc.getSelectedFile();
         if (selectedImage != null)
         {
-          VideoCaptureProcessor.setFileChooserLastPath(selectedImage.getParentFile());
           try
           {
+            VideoCaptureProcessor.setFileChooserLastPath(selectedImage.getParentFile());
+
             iconLabel.setIcon(new ImageIcon(ImageUtility.resizeImageFromFile(selectedImage,
                 VideoCaptureProcessor.GAME_ICON_WIDTH, VideoCaptureProcessor.GAME_ICON_HEIGHT, true)));
           }
           catch (IOException e1)
           {
             JOptionPane.showMessageDialog(GameEditor.this,
-                "Error encountered while attempting to load image for game icon.",
-                "Error Loading Image", JOptionPane.ERROR_MESSAGE);
+                "Error encountered while attempting to load image for game icon.", "Error Loading Image",
+                JOptionPane.ERROR_MESSAGE);
             logger.log(Level.SEVERE, "Image Load Error", e1);
           }
           GameEditor.this.pack();
@@ -202,8 +203,8 @@ public class GameEditor extends JDialog
         newGame.setFilenameLabel(filenameLabelField.getText());
         try
         {
-          String imagesDirPath = new StringBuffer(System.getProperty("user.home")).append(File.separator)
-              .append("images").toString();
+          String defaultPath = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
+          String imagesDirPath = new StringBuffer(defaultPath).append(File.separator).append("images").toString();
           new File(imagesDirPath).mkdir();
           String newPath = new StringBuffer(imagesDirPath).append(FileUtility.FILE_SEPARATOR)
               .append(selectedImage.getName()).toString();
@@ -212,9 +213,8 @@ public class GameEditor extends JDialog
           // Make sure file isn't going to be copied over itself in /images
           if (!copiedImage.getCanonicalPath().equalsIgnoreCase(selectedImage.getCanonicalPath()))
           {
-            newPath = ImageUtility.saveImageToPngFile(ImageUtility.resizeImageFromFile(
-                selectedImage, VideoCaptureProcessor.GAME_ICON_WIDTH, VideoCaptureProcessor.GAME_ICON_HEIGHT,
-                true), newPath);
+            newPath = ImageUtility.saveImageToPngFile(ImageUtility.resizeImageFromFile(selectedImage,
+                VideoCaptureProcessor.GAME_ICON_WIDTH, VideoCaptureProcessor.GAME_ICON_HEIGHT, true), newPath);
           }
 
           newGame.setIconImageFilepath(newPath);
@@ -241,8 +241,7 @@ public class GameEditor extends JDialog
           }
           else
           {
-            JOptionPane.showMessageDialog(GameEditor.this,
-                "Game Title must be unique. Please enter a new Game Title.",
+            JOptionPane.showMessageDialog(GameEditor.this, "Game Title must be unique. Please enter a new Game Title.",
                 "Game Title Must Be Unique", JOptionPane.WARNING_MESSAGE);
             return;
           }
@@ -256,8 +255,8 @@ public class GameEditor extends JDialog
         catch (Exception e)
         {
           JOptionPane.showMessageDialog(GameEditor.this,
-              "Error encountered while attempting to save game to the file system.",
-              "Error Saving Game", JOptionPane.ERROR_MESSAGE);
+              "Error encountered while attempting to save game to the file system.", "Error Saving Game",
+              JOptionPane.ERROR_MESSAGE);
           logger.log(Level.SEVERE, "Game Save Error", e);
         }
       }
@@ -292,8 +291,7 @@ public class GameEditor extends JDialog
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
-    catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException
-        | IllegalAccessException e)
+    catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException | IllegalAccessException e)
     {
       logger.log(Level.SEVERE, "Exception", e);
     }

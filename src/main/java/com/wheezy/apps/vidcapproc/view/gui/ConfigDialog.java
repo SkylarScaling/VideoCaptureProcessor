@@ -57,24 +57,26 @@ public class ConfigDialog extends JDialog
       logger.log(Level.SEVERE, "Unable to create log file", e);
     }
 
+    String defaultFolder = propertiesInstance
+        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName());
+    
     try
     {
       propertiesInstance = CaptureProcessorPropertiesUtility.getInstance();
+      
+      if (defaultFolder != null)
+      {
+        VideoCaptureProcessor.setFileChooserLastPath(new File(defaultFolder));
+      }      
     }
     catch (IOException e2)
     {
       JOptionPane.showMessageDialog(ConfigDialog.this,
-          "An error was encountered while reading from the properties file.",
-          "Error Reading Properties", JOptionPane.ERROR_MESSAGE);
+          "An error was encountered while reading from the properties file.", "Error Reading Properties",
+          JOptionPane.ERROR_MESSAGE);
       logger.log(Level.SEVERE, "Property Read Error", e2);
     }
-
-    String defaultFolder = propertiesInstance
-        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName());
-    if (defaultFolder != null)
-    {
-      VideoCaptureProcessor.setFileChooserLastPath(new File(defaultFolder));
-    }
+    
     setDefaultFolders();
 
     setIconImage(VideoCaptureProcessor.WINDOW_ICON);
@@ -97,8 +99,8 @@ public class ConfigDialog extends JDialog
     captureTextField = new JTextField();
     capturePanel.add(captureTextField);
     captureTextField.setColumns(CONFIG_TEXT_FIELD_COLUMNS);
-    captureTextField.setText(propertiesInstance
-        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()));
+    captureTextField
+        .setText(propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()));
 
     JButton captureBrowseButton = new JButton("Browse...");
     captureBrowseButton.addActionListener(new ActionListener()
@@ -113,17 +115,17 @@ public class ConfigDialog extends JDialog
         File capFile = captureFC.getSelectedFile();
         if (capFile != null)
         {
-          VideoCaptureProcessor.setFileChooserLastPath(capFile.getParentFile());
           String capPath = "";
           try
           {
+            VideoCaptureProcessor.setFileChooserLastPath(capFile.getParentFile());
             capPath = capFile.getCanonicalPath();
           }
           catch (IOException e1)
           {
             JOptionPane.showMessageDialog(ConfigDialog.this,
-                "An error prevented the chosen directory from being saved.",
-                "Error Setting Folder Location", JOptionPane.ERROR_MESSAGE);
+                "An error prevented the chosen directory from being saved.", "Error Setting Folder Location",
+                JOptionPane.ERROR_MESSAGE);
             logger.log(Level.SEVERE, "Directory Save Error", e1);
           }
           captureTextField.setText(capPath);
@@ -144,8 +146,8 @@ public class ConfigDialog extends JDialog
     keepersTextField = new JTextField();
     keepersPanel.add(keepersTextField);
     keepersTextField.setColumns(CONFIG_TEXT_FIELD_COLUMNS);
-    keepersTextField.setText(propertiesInstance
-        .getProperty(CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName()));
+    keepersTextField
+        .setText(propertiesInstance.getProperty(CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName()));
 
     JButton keepersBrowseButton = new JButton("Browse...");
     keepersBrowseButton.addActionListener(new ActionListener()
@@ -160,17 +162,17 @@ public class ConfigDialog extends JDialog
         File keepFile = keepersFC.getSelectedFile();
         if (keepFile != null)
         {
-          VideoCaptureProcessor.setFileChooserLastPath(keepFile.getParentFile());
           String keepPath = "";
           try
           {
+            VideoCaptureProcessor.setFileChooserLastPath(keepFile.getParentFile());
             keepPath = keepFile.getCanonicalPath();
           }
           catch (IOException e1)
           {
             JOptionPane.showMessageDialog(ConfigDialog.this,
-                "An error prevented the chosen directory from being saved.",
-                "Error Setting Folder Location", JOptionPane.ERROR_MESSAGE);
+                "An error prevented the chosen directory from being saved.", "Error Setting Folder Location",
+                JOptionPane.ERROR_MESSAGE);
             logger.log(Level.SEVERE, "Directory Save Error", e1);
           }
           keepersTextField.setText(keepPath);
@@ -191,8 +193,8 @@ public class ConfigDialog extends JDialog
     clipsTextField = new JTextField();
     clipsPanel.add(clipsTextField);
     clipsTextField.setColumns(CONFIG_TEXT_FIELD_COLUMNS);
-    clipsTextField.setText(propertiesInstance
-        .getProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName()));
+    clipsTextField
+        .setText(propertiesInstance.getProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName()));
 
     JButton clipsBrowseButton = new JButton("Browse...");
     clipsBrowseButton.addActionListener(new ActionListener()
@@ -207,17 +209,17 @@ public class ConfigDialog extends JDialog
         File clipFile = clipsFC.getSelectedFile();
         if (clipFile != null)
         {
-          VideoCaptureProcessor.setFileChooserLastPath(clipFile.getParentFile());
           String clipPath = "";
           try
           {
+            VideoCaptureProcessor.setFileChooserLastPath(clipFile.getParentFile());
             clipPath = clipFile.getCanonicalPath();
           }
           catch (IOException e1)
           {
             JOptionPane.showMessageDialog(ConfigDialog.this,
-                "An error prevented the chosen directory from being saved.",
-                "Error Setting Folder Location", JOptionPane.ERROR_MESSAGE);
+                "An error prevented the chosen directory from being saved.", "Error Setting Folder Location",
+                JOptionPane.ERROR_MESSAGE);
             logger.log(Level.SEVERE, "Directory Save Error", e1);
           }
           clipsTextField.setText(clipPath);
@@ -236,16 +238,14 @@ public class ConfigDialog extends JDialog
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        propertiesInstance.setProperty(
-            CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName(),
+        propertiesInstance.setProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName(),
             captureTextField.getText());
 
-        propertiesInstance.setProperty(
-            CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName(),
+        propertiesInstance.setProperty(CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName(),
             keepersTextField.getText());
 
-        propertiesInstance.setProperty(
-            CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName(), clipsTextField.getText());
+        propertiesInstance.setProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName(),
+            clipsTextField.getText());
 
         try
         {
@@ -253,9 +253,8 @@ public class ConfigDialog extends JDialog
         }
         catch (IOException e1)
         {
-          JOptionPane.showMessageDialog(ConfigDialog.this,
-              "An error prevented settings from being saved.", "Error Saving Settings",
-              JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(ConfigDialog.this, "An error prevented settings from being saved.",
+              "Error Saving Settings", JOptionPane.ERROR_MESSAGE);
           logger.log(Level.SEVERE, "Settings Save Error", e1);
         }
         ConfigDialog.this.dispose();
@@ -285,25 +284,19 @@ public class ConfigDialog extends JDialog
 
   private void setDefaultFolders()
   {
-    if (propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY
-        .getName()) == null)
+    if (propertiesInstance.getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName()) == null)
     {
-      propertiesInstance.setProperty(
-          CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName(), "capture");
+      propertiesInstance.setProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName(), "capture");
     }
 
-    if (propertiesInstance.getProperty(CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY
-        .getName()) == null)
+    if (propertiesInstance.getProperty(CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName()) == null)
     {
-      propertiesInstance.setProperty(
-          CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName(), "capture");
+      propertiesInstance.setProperty(CaptureProcessorProperties.KEEPERS_LOCATION_PROPERTY.getName(), "capture");
     }
 
-    if (propertiesInstance
-        .getProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName()) == null)
+    if (propertiesInstance.getProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName()) == null)
     {
-      propertiesInstance.setProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName(),
-          "capture");
+      propertiesInstance.setProperty(CaptureProcessorProperties.CLIPS_LOCATION_PROPERTY.getName(), "capture");
     }
   }
 
@@ -313,8 +306,7 @@ public class ConfigDialog extends JDialog
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
-    catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException
-        | IllegalAccessException e)
+    catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException | IllegalAccessException e)
     {
       logger.log(Level.SEVERE, "Exception", e);
     }
