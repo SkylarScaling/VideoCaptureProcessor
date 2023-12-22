@@ -57,17 +57,17 @@ public class ConfigDialog extends JDialog
       logger.log(Level.SEVERE, "Unable to create log file", e);
     }
 
-    String defaultFolder = propertiesInstance
-        .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName());
-    
     try
     {
       propertiesInstance = CaptureProcessorPropertiesUtility.getInstance();
-      
+
+      String defaultFolder = propertiesInstance
+          .getProperty(CaptureProcessorProperties.CAPTURE_LOCATION_PROPERTY.getName());
+
       if (defaultFolder != null)
       {
         VideoCaptureProcessor.setFileChooserLastPath(new File(defaultFolder));
-      }      
+      }
     }
     catch (IOException e2)
     {
@@ -76,7 +76,7 @@ public class ConfigDialog extends JDialog
           JOptionPane.ERROR_MESSAGE);
       logger.log(Level.SEVERE, "Property Read Error", e2);
     }
-    
+
     setDefaultFolders();
 
     setIconImage(VideoCaptureProcessor.WINDOW_ICON);
